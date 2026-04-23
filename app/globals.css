@@ -1,26 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #050a05;
+  --green: #00ff41;
+  --cyan: #00ffff;
+  --amber: #ffb000;
+  --dim: #004d14;
+  --border: #00ff4144;
+  --text: #d8ffd8;
+  --muted: #7aaa7a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0;
+  padding: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* CRT flicker on headings */
+@keyframes flicker {
+  0%, 97%, 100% { opacity: 1; }
+  98% { opacity: 0.85; }
+  99% { opacity: 1; }
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--green), 0 0 16px rgba(0,255,65,0.2); }
+  50% { box-shadow: 0 0 16px var(--green), 0 0 32px rgba(0,255,65,0.3); }
+}
+
+.flicker {
+  animation: flicker 8s infinite;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+.glow-border {
+  border: 1px solid var(--green);
+  box-shadow: 0 0 8px rgba(0,255,65,0.3), inset 0 0 8px rgba(0,255,65,0.05);
+}
+
+.glow-border:focus {
+  outline: none;
+  box-shadow: 0 0 16px rgba(0,255,65,0.5), inset 0 0 8px rgba(0,255,65,0.1);
+}
+
+.glow-btn {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.pixel-heading {
+  font-family: 'VT323', monospace;
+  letter-spacing: 0.05em;
+}
+
+.corner-box {
+  position: relative;
+}
+
+.corner-box::before,
+.corner-box::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: var(--green);
+  border-style: solid;
+}
+
+.corner-box::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.corner-box::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--dim); }
+::-webkit-scrollbar-thumb:hover { background: var(--green); }
+
+/* Input reset */
+input, textarea {
+  font-family: 'Share Tech Mono', monospace;
+  background: transparent;
+  color: var(--text);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted);
+}
+
+/* Progress bar glow */
+.progress-bar {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
 }
