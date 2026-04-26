@@ -6,13 +6,14 @@ import Link from "next/link";
 import { loadBrief, saveBrief, clearBrief, ProjectBrief } from "@/lib/storage";
 import {
   generateSessionPrompt,
+  generatePlanPrompt,
   generateStuckPrompt,
   generateResetPrompt,
   generateClosePrompt,
 } from "@/lib/prompt";
 import { cleanBrief, cleanGoalInput } from "@/lib/clean";
 
-type Mode = "session" | "stuck" | "reset" | "close";
+type Mode = "session" | "plan" | "stuck" | "reset" | "close";
 
 const MODES: {
   id: Mode;
@@ -31,6 +32,16 @@ const MODES: {
     color: "var(--green)",
     inputLabel: "> what do you want to work on today?",
     inputPlaceholder: "e.g. add the login page, fix the nav bug, write homepage copy...",
+    needsInput: true,
+    noInputMsg: "",
+  },
+  {
+    id: "plan",
+    icon: "◈",
+    label: "PLAN FIRST",
+    color: "#a78bfa",
+    inputLabel: "> what do you want to plan or build?",
+    inputPlaceholder: "e.g. I want to add a booking system, build a contact form, create a dashboard...",
     needsInput: true,
     noInputMsg: "",
   },
@@ -137,7 +148,9 @@ function SessionContent() {
         body: JSON.stringify({ brief: cleaned, todayGoal: cleanedInput, mode }),
       });
       const data = await res.json();
-      if (data.prompt) {
+      if (res.status === 429) {
+        setPrompt("// RATE LIMIT REACHED — You can generate 5 prompts per hour. Try again later.");
+      } else if (data.prompt) {
         setPrompt(data.prompt);
       } else {
         setPrompt("// ERROR: Could not generate prompt. Check your API key.");
@@ -378,12 +391,19 @@ function SessionContent() {
               {copied ? "✓ COPIED" : "[ COPY ]"}
             </button>
           </div>
-          <pre
-            className="text-base leading-relaxed whitespace-pre-wrap"
-            style={{ color: "var(--text)", fontFamily: "'Share Tech Mono', monospace" }}
-          >
-            {prompt}
-          </pre>
+          <textarea
+            className="w-full text-base leading-relaxed resize-none bg-transparent"
+            style={{
+              color: "var(--text)",
+              fontFamily: "'Share Tech Mono', monospace",
+              outline: "none",
+              border: "none",
+              minHeight: "200px",
+            }}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={prompt.split("\n").length + 2}
+          />
         </div>
       )}
 

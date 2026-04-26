@@ -1,6 +1,6 @@
 import { ProjectBrief } from "./storage";
 
-export type ConnectorType = "session" | "stuck" | "reset" | "close";
+export type ConnectorType = "session" | "plan" | "stuck" | "reset" | "close";
 
 // ─── Adaptive working rules ───────────────────────────────────────────────────
 
@@ -199,6 +199,59 @@ export function generateResetPrompt(brief: ProjectBrief): string {
   lines.push("- Acknowledge the context above and confirm you understand where we are.");
   lines.push("- Wait for me to tell you what to work on next.");
   lines.push("- Keep your response short.");
+
+  return lines.join("\n");
+}
+
+export function generatePlanPrompt(
+  brief: ProjectBrief,
+  todayGoal: string
+): string {
+  const lines: string[] = [];
+
+  lines.push(`You are helping me plan something for ${brief.projectName}. Do NOT build or write any code yet.`);
+  lines.push("");
+  lines.push("## Project context");
+  lines.push(`Goal: ${brief.description}`);
+  if (brief.targetUser) lines.push(`Built for: ${brief.targetUser}`);
+  if (brief.techStack) lines.push(`Stack: ${brief.techStack}`);
+  if (brief.aiTools) lines.push(`AI tools I'm using: ${brief.aiTools}`);
+  if (brief.constraints) lines.push(`Constraints: ${brief.constraints}`);
+
+  if (brief.lastSessionSummary) {
+    lines.push("");
+    lines.push("## Last session");
+    lines.push(brief.lastSessionSummary);
+  }
+
+  lines.push("");
+  lines.push("## What I want to plan");
+  lines.push(todayGoal);
+
+  lines.push("");
+  lines.push("## Your job — follow these steps exactly:");
+  lines.push("");
+  lines.push("### Step 1 — Ask me questions first");
+  lines.push("Before doing anything else, ask me 3–5 focused questions that will help you understand exactly what I need.");
+  lines.push("Ask all questions in one message. Wait for my answers before moving on.");
+  lines.push("Keep questions simple — I am not technical, so use plain language.");
+  lines.push("");
+  lines.push("### Step 2 — Propose a plan");
+  lines.push("Once I've answered, write a clear step-by-step plan.");
+  lines.push("Each step should be one small, specific task.");
+  lines.push("Show me the full plan and ask: 'Does this look right? Should I adjust anything?'");
+  lines.push("Wait for my approval before moving on.");
+  lines.push("");
+  lines.push("### Step 3 — Execute one step at a time");
+  lines.push("Only after I approve the plan, start step 1.");
+  lines.push("Complete it fully, show me the result, and wait for my confirmation before moving to step 2.");
+  lines.push("Never skip ahead.");
+  lines.push("");
+  lines.push("## Important rules");
+  lines.push("- Do not write any code or make any changes until I approve the plan.");
+  lines.push("- If something is unclear at any point, ask — do not assume.");
+  lines.push("- Use plain language throughout. Explain technical terms if you must use them.");
+  lines.push("- Keep your messages focused and short. No walls of text.");
 
   return lines.join("\n");
 }
