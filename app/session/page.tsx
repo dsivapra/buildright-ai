@@ -6,14 +6,13 @@ import Link from "next/link";
 import { loadBrief, saveBrief, clearBrief, ProjectBrief } from "@/lib/storage";
 import {
   generateSessionPrompt,
-  generatePlanPrompt,
   generateStuckPrompt,
   generateResetPrompt,
   generateClosePrompt,
 } from "@/lib/prompt";
 import { cleanBrief, cleanGoalInput } from "@/lib/clean";
 
-type Mode = "session" | "plan" | "stuck" | "reset" | "close";
+type Mode = "session" | "stuck" | "reset" | "close";
 
 const MODES: {
   id: Mode;
@@ -32,16 +31,6 @@ const MODES: {
     color: "var(--green)",
     inputLabel: "> what do you want to work on today?",
     inputPlaceholder: "e.g. add the login page, fix the nav bug, write homepage copy...",
-    needsInput: true,
-    noInputMsg: "",
-  },
-  {
-    id: "plan",
-    icon: "◈",
-    label: "PLAN FIRST",
-    color: "#a78bfa",
-    inputLabel: "> what do you want to plan or build?",
-    inputPlaceholder: "e.g. I want to add a booking system, build a contact form, create a dashboard...",
     needsInput: true,
     noInputMsg: "",
   },

@@ -79,9 +79,13 @@ Write a prompt that:
 2. Gives full project context in structured sections
 3. Includes domain-specific technical standards and best practices they wouldn't know to specify
 4. Sets precise working rules tailored to their stack, tools, and project type
-5. Ends with today's specific goal framed technically
+5. Ends with today's specific goal — and instructs the AI to follow this exact working sequence:
+   a) Ask 2–3 short clarifying questions BEFORE doing anything (all in one message, plain language, wait for answers)
+   b) Propose a short numbered plan based on the answers, ask "Does this look right?" and wait for approval
+   c) Only after approval: execute one step at a time, show the result, wait for confirmation before the next step
+   d) Never skip ahead or batch steps
 
-Make it expert-level — the kind of prompt a senior engineer or experienced product builder would write.`;
+Make it expert-level — the kind of prompt a senior engineer or experienced product builder would write. The plan-first behaviour should feel natural and built-in, not bolted on.`;
 
     } else if (mode === "stuck") {
       userRequest = `Generate an expert-level debugging prompt for this situation:
@@ -109,33 +113,6 @@ Stack: ${brief.techStack}
 Last session summary: ${brief.lastSessionSummary || "No summary available."}
 
 Write a prompt that efficiently re-establishes full context for a fresh AI session. Include the key architectural decisions, current state, and what's next. Make it concise but complete — a senior developer handing off to a colleague.`;
-
-    } else if (mode === "plan") {
-      userRequest = `Generate an expert planning prompt for this project:
-
-Project name: ${brief.projectName}
-What they're building: ${brief.description}
-Who it's for: ${brief.targetUser}
-AI tools they use: ${brief.aiTools}
-Tech stack: ${brief.techStack}
-Constraints: ${brief.constraints}
-What they want to plan: ${todayGoal}
-
-Write a prompt that instructs the AI to follow this exact sequence — do NOT skip steps:
-
-1. QUESTIONS FIRST: Before doing anything else, ask the user 3–5 focused clarifying questions about what they want to build. Ask all questions in a single message. Wait for their answers before proceeding. Keep questions plain and non-technical.
-
-2. PROPOSE A PLAN: Once they answer, write a clear numbered step-by-step plan. Each step = one small, specific task. End with: "Does this look right? Should I adjust anything?" Wait for explicit approval before starting.
-
-3. EXECUTE ONE STEP AT A TIME: Only after plan approval, begin step 1. Complete it fully, show the result, then wait for confirmation before moving to step 2. Never skip ahead. Never batch steps.
-
-The prompt must also include these rules:
-- Do not write any code or make changes until the plan is approved
-- If anything is unclear, ask — never assume
-- Use plain language; explain technical terms if necessary
-- Keep messages short and focused — no walls of text
-
-Make the prompt sound like it was written by a senior product manager who knows exactly how to structure AI-assisted work sessions.`;
 
     } else if (mode === "close") {
       userRequest = `Generate a session close prompt for this project:
