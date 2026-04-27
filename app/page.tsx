@@ -132,26 +132,17 @@ export default function Home() {
             </Link>
           </>
         ) : (
-          <>
-            <Link
-              href="/wizard"
-              className="pixel-heading glow-btn px-8 py-3 text-lg text-center"
-              style={{
-                background: "var(--green)",
-                color: "#000",
-                border: "2px solid var(--green)",
-              }}
-            >
-              [ SETUP PROJECT ]
-            </Link>
-            <Link
-              href="/session"
-              className="pixel-heading px-8 py-3 text-lg text-center glow-border"
-              style={{ color: "var(--green)" }}
-            >
-              [ SKIP TO SESSION ]
-            </Link>
-          </>
+          <Link
+            href="/wizard"
+            className="pixel-heading glow-btn px-8 py-3 text-lg text-center"
+            style={{
+              background: "var(--green)",
+              color: "#000",
+              border: "2px solid var(--green)",
+            }}
+          >
+            [ SETUP PROJECT ]
+          </Link>
         )}
       </div>
 
