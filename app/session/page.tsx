@@ -78,9 +78,8 @@ function SessionContent() {
   const [input, setInput] = useState("");
   const [prompt, setPrompt] = useState("");
   const [copied, setCopied] = useState(false);
-  const [lastSessionInput, setLastSessionInput] = useState("");
-  const [showLastSession, setShowLastSession] = useState(false);
   const [tick, setTick] = useState(true);
+  const [dots, setDots] = useState(1);
   const [cleanWarnings, setCleanWarnings] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -90,6 +89,12 @@ function SessionContent() {
     const t = setInterval(() => setTick((v) => !v), 530);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    if (!loading) return;
+    const t = setInterval(() => setDots((d) => (d % 3) + 1), 400);
+    return () => clearInterval(t);
+  }, [loading]);
 
   useEffect(() => {
     setMode(paramMode);
@@ -115,13 +120,8 @@ function SessionContent() {
     setLoading(true);
     setPrompt("");
 
-    // merge last session if provided
-    const rawBrief = lastSessionInput.trim()
-      ? { ...brief, lastSessionSummary: lastSessionInput.trim() }
-      : brief;
-
     // clean + validate brief
-    const { brief: cleaned, warnings } = cleanBrief(rawBrief);
+    const { brief: cleaned, warnings } = cleanBrief(brief);
     setCleanWarnings(warnings);
 
     // save cleaned version back
@@ -252,36 +252,6 @@ function SessionContent() {
           border: "1px solid var(--border)",
         }}
       >
-        {/* Last session toggle */}
-        {mode === "session" && (
-          <div className="mb-4">
-            <button
-              onClick={() => setShowLastSession((v) => !v)}
-              className="text-base mb-2 flex items-center gap-1"
-              style={{ color: "var(--muted)" }}
-            >
-              {showLastSession ? "▾" : "▸"} LAST SESSION SUMMARY (OPTIONAL)
-            </button>
-            {showLastSession && (
-              <textarea
-                rows={3}
-                value={lastSessionInput}
-                onChange={(e) => setLastSessionInput(e.target.value)}
-                placeholder="what did you accomplish last session? what's unfinished?"
-                className="w-full px-4 py-3 text-base resize-none"
-                style={{
-                  background: "rgba(0,0,0,0.4)",
-                  border: "1px solid var(--border)",
-                  color: "var(--text)",
-                  outline: "none",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--green)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-              />
-            )}
-          </div>
-        )}
-
         {/* Main input */}
         {currentMode.needsInput ? (
           <div>
@@ -324,7 +294,7 @@ function SessionContent() {
             border: `2px solid ${currentMode.color}`,
           }}
         >
-          {loading ? "GENERATING..." : "GENERATE PROMPT >"}
+          {loading ? `GENERATING${".".repeat(dots)}` : "GENERATE PROMPT >"}
         </button>
       </div>
 
